@@ -85,3 +85,179 @@ bool Scene::IsActive() const
 bool Scene::IsVisible() const {
 	return isVisible;
 }
+
+/**
+*シーンスタックを取得する
+*
+*@return シーンスタック
+*/
+
+SceneStack& SceneStack::Instance()
+{
+	static SceneStack instance;
+	return instance;
+}
+
+/**
+*コンストラクタ
+*/
+
+SceneStack::SceneStack()
+{
+	//スタックの予約サイズを16個設定
+	stack.reserve(16);
+}
+
+
+/**
+*シーンをプッシュする
+*
+*@param p 新しいシーン
+*/
+
+void SceneStack::Push(ScenePtr p)
+{
+	//スタックにシーンが積まれているかどうかを調べ、存在していれば停止させる
+	if (!stack.empty())
+	{
+		Current().Stop();
+	}
+
+	stack.push_back(p);
+	std::cout << "[シーン プッシュ]" << p->Name() << "\n";
+
+	//新しいシーンを初期化し、実行開始させる
+	Current().Initialize();
+	Current().Play();
+}
+
+/**
+*シーンをポップする
+*/
+
+void SceneStack::Pop()
+{
+	if (stack.empty())//スタックの状態をチェック
+	{
+		std::cout << "[シーン ポップ][警告] シーンスタックが空です\n";
+		return;
+	}
+
+	//現在のシーンを停止、終了させる
+	Current().Stop();
+	Current().Finalize();
+
+	const std::string sceneName = Current().Name();
+	stack.pop_back();
+	std::cout << "[シーン ポップ]" << sceneName << "\n";
+
+	//まだシーンが積まれていれば新たにカレントになったシーンを実行する
+	if (!stack.empty())
+	{
+		Current().Play();
+	}
+
+}
+	/**
+	*シーンを置き換える
+	*
+	*@param 新しいシーン
+	*/
+void SceneStack::Replace(ScenePtr p)
+{
+	std::string sceneName = "(Empty)";
+	if (stack.empty())//スタックの状態をチェック
+	{
+		std::cout << "[シーン リプレース][警告]シーンスタックが空です\n";
+	}
+	else//スタックが積まれている場合、現在のシーンを停止、終了させる
+	{
+		sceneName = Current().Name();
+		Current().Stop();
+		Current().Finalize();
+		stack.pop_back();
+	}
+	stack.push_back(p);
+	std::cout << "[シーン リプレース]" << sceneName << "->" << p->Name() << "\n";
+
+	//新しいシーンを初期化、実行開始する
+	Current().Initialize();
+	Current().Play();
+}
+
+
+/**
+*現在のシーンを取得する
+*
+*@return 現在のシーン
+*/
+
+Scene& SceneStack::Current()
+{
+	return *stack.back();
+}
+
+
+/**
+*現在のシーンを取得する
+*
+*@return 現在のシーン
+*/
+const Scene& SceneStack::Current() const
+{
+	return *stack.back();
+}
+
+/**
+*シーンの数を取得する
+*
+*@return スタックに積まれているシーンの数
+*/
+
+size_t SceneStack::Size() const
+{
+	return stack.size();
+}
+
+
+/**
+*スタックが空かどうかを調べる
+*
+*@retval true スタックは空
+*@retval false スタックに1以上のシーンが積まれている
+*/
+bool SceneStack::Empty() const
+{
+	return stack.empty();
+}
+
+
+/**
+*シーンを更新する
+*
+*@param deltaTime 前回の更新からの経過時間(秒)
+*/
+void SceneStack::Update(float deltaTime)
+{
+	for (ScenePtr& e:stack){
+		e->ProcessImput();
+	}
+	for (ScenePtr& e : stack) {
+		e->Uptate(deltaTime);
+	}
+}
+
+
+/**
+*シーンを描画する
+*/
+
+void SceneStack::Render()
+{
+	for (ScenePtr& e : stack) {
+		if (e->IsVisible())
+		{
+			e->Render();
+		}
+	}
+}
