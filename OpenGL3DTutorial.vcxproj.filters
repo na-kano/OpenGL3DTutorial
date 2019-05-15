@@ -37,9 +37,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGL3DTutorial.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Scene.cpp">
       <Filter>Src</Filter>
     </ClCompile>
