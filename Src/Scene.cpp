@@ -240,10 +240,10 @@ bool SceneStack::Empty() const
 void SceneStack::Update(float deltaTime)
 {
 	for (ScenePtr& e:stack){
-		e->ProcessImput();
+		e->ProcessInput();
 	}
 	for (ScenePtr& e : stack) {
-		e->Uptate(deltaTime);
+		e->Update(deltaTime);
 	}
 }
 

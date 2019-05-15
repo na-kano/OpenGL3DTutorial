@@ -21,8 +21,8 @@ public:
 
 
 	virtual bool Initialize() = 0{}
-	virtual void ProcessImput()=0{}
-	virtual void Uptate(float)=0{}
+	virtual void ProcessInput()=0{}
+	virtual void Update(float)=0{}
 	virtual void Render()=0{}
 	virtual void Finalize()=0{}
 
