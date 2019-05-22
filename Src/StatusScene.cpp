@@ -3,6 +3,7 @@
 */
 
 #include "StatusScene.h"
+#include "GLFWEW.h"
 
 /**
 *ƒvƒŒƒCƒ„[‚Ì“ü—Í‚ğˆ—‚·‚é
@@ -10,5 +11,9 @@
 
 void StatusScene::ProcessInput() 
 {
-	SceneStack::Instance().Pop();
+	GLFWEW::Window& window = GLFWEW::Window::Intance();
+	if (window.GetGamePad().buttonDown & GamePad::START)
+	{
+		SceneStack::Instance().Pop();
+	}
 }
